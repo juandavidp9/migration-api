@@ -7,3 +7,11 @@ class EmployeeCreate(BaseModel):
     datetime: datetime
     department_id: int
     job_id: int
+
+class DepartmentCreate(BaseModel):
+    id: int
+    department: str
+
+class JobCreate(BaseModel):
+    id: int
+    job: str
