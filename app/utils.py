@@ -45,3 +45,26 @@ def parse_csv(file, model, db):
             errors.append(f"Fila {row_number}: Error de valor - {str(e)}")
     
     return csv_data, errors
+
+
+
+def insert_batch(db, data, db_model):
+    """
+    Inserta un lote de datos en la base de datos.
+    Maneja errores de integridad y realiza commit por lote.
+    """
+    try:
+        db.bulk_insert_mappings(db_model, [item.dict() for item in data])
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error de integridad en la base de datos: {str(e)}"
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error inesperado al insertar datos: {str(e)}"
+        )
