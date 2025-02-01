@@ -26,3 +26,26 @@ def process_csv(file, model, db_model, db):
         insert_batch(db, batch, db_model)
 
 
+@router.post("/upload/employees")
+async def upload_employees(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    """
+    Endpoint para cargar empleados desde un archivo CSV.
+    """
+    db = SessionLocal()
+    try:
+        contents = await file.read()
+        
+        # Procesar el CSV en segundo plano
+        background_tasks.add_task(process_csv, contents, schemas.EmployeeCreate, models.Employee, db)
+        
+        return {"message": "CSV recibido y en proceso de inserción"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error inesperado: {str(e)}"
+        )
+    finally:
+        db.close()
