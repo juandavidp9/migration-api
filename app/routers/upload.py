@@ -53,7 +53,7 @@ async def upload_departments(file: UploadFile = File(...)):
         db.close()
 
 
-  @router.post("/upload/departments")
+@router.post("/upload/departments")
 async def upload_departments(file: UploadFile = File(...)):
     """
     Endpoint para cargar departamentos desde un archivo CSV.
