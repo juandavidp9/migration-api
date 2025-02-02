@@ -1,4 +1,5 @@
 from io import StringIO
+from . import models 
 import csv
 from datetime import datetime
 from pydantic import ValidationError

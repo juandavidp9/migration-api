@@ -25,22 +25,24 @@ def process_csv(file, model, db_model, db):
         batch = data[i:i + batch_size]
         insert_batch(db, batch, db_model)
 
-
-@router.post("/upload/employees")
-async def upload_employees(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+@router.post("/upload/departments")
+async def upload_departments(file: UploadFile = File(...)):
     """
-    Endpoint para cargar empleados desde un archivo CSV.
+    Endpoint para cargar departamentos desde un archivo CSV.
     """
     db = SessionLocal()
     try:
         contents = await file.read()
+        data, errors = parse_csv(contents, schemas.DepartmentCreate, db)
         
-        # Procesar el CSV en segundo plano
-        background_tasks.add_task(process_csv, contents, schemas.EmployeeCreate, models.Employee, db)
+        if errors:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Errores de validación en el CSV", "errors": errors}
+            )
         
-        return {"message": "CSV recibido y en proceso de inserción"}
-    except HTTPException as e:
-        raise e
+        insert_batch(db, data, models.Department)
+        return {"message": f"Se insertaron {len(data)} departamentos exitosamente"}
     except Exception as e:
         db.rollback()
         raise HTTPException(
@@ -49,3 +51,88 @@ async def upload_employees(background_tasks: BackgroundTasks, file: UploadFile =
         )
     finally:
         db.close()
+
+
+  @router.post("/upload/departments")
+async def upload_departments(file: UploadFile = File(...)):
+    """
+    Endpoint para cargar departamentos desde un archivo CSV.
+    """
+    db = SessionLocal()
+    try:
+        contents = await file.read()
+        data, errors = parse_csv(contents, schemas.DepartmentCreate, db)
+        
+        if errors:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Errores de validación en el CSV", "errors": errors}
+            )
+        
+        insert_batch(db, data, models.Department)
+        return {"message": f"Se insertaron {len(data)} departamentos exitosamente"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error inesperado: {str(e)}"
+        )
+    finally:
+        db.close()
+
+
+
+@router.post("/upload/jobs")
+async def upload_jobs(file: UploadFile = File(...)):
+    """
+    Endpoint para cargar jobs desde un archivo CSV.
+    """
+    db = SessionLocal()
+    try:
+        contents = await file.read()
+        data, errors = parse_csv(contents, schemas.JobCreate, db)
+        
+        if errors:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Errores de validación en el CSV", "errors": errors}
+            )
+        
+        insert_batch(db, data, models.Job)
+        return {"message": f"Se insertaron {len(data)} jobs exitosamente"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error inesperado: {str(e)}"
+        )
+    finally:
+        db.close()
+
+
+
+@router.post("/upload/employees")
+async def upload_employees(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    """
+    Endpoint para cargar empleados desde un archivo CSV.
+    """
+    try:
+        contents = await file.read()
+        
+        def process_with_new_session():
+            db = SessionLocal()
+            try:
+                process_csv(contents, schemas.EmployeeCreate, models.Employee, db)
+            finally:
+                db.close()
+        
+        background_tasks.add_task(process_with_new_session)
+        
+        return {"message": "CSV recibido y en proceso de inserción"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error inesperado: {str(e)}"
+        )
