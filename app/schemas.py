@@ -4,17 +4,19 @@ from typing import Optional
 
 class EmployeeCreate(BaseModel):
     id: int
-    name: Optional[str] = None
-    datetime: Optional[datetime] = None
+    name: str
+    datetime: Optional[str] = None  
     department_id: Optional[int] = None
     job_id: Optional[int] = None
 
-    @validator('name')
-    def validate_name(cls, v):
-        if v and v.strip():
-            return v.strip()
-        return None
+    class Config:
+        from_attributes = True
 
+    @validator('name')
+    def name_must_not_be_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('El nombre no puede estar vacío')
+        return v.strip()
 class DepartmentCreate(BaseModel):
     id: int
     department: str

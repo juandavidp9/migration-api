@@ -7,36 +7,40 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 import os
 
-def parse_csv(file, model, db):
+import csv
+from io import StringIO
+from typing import List, Tuple, Any
+from pydantic import ValidationError
+
+import csv
+from io import StringIO
+from typing import List, Tuple, Any
+from pydantic import ValidationError
+
+def parse_csv(file: bytes, model: Any, db: Any) -> Tuple[List[Any], List[str]]:
     csv_data = []
     errors = []
     reader = csv.reader(StringIO(file.decode('utf-8')))
     
     for row_number, row in enumerate(reader, start=1):
-        # Skip completely empty rows
         if not any(row):
             continue
             
         try:
-            # Clean data
             cleaned_row = [val.strip() if isinstance(val, str) else val for val in row]
             cleaned_row = [None if val == '' else val for val in cleaned_row]
             
-            # Check if required fields (id and name) are present
-            if not cleaned_row[0] or not cleaned_row[1]:
-                errors.append(f"Fila {row_number}: ID y nombre son campos requeridos")
-                continue
+            if model.__name__ == "EmployeeCreate":
+                if not cleaned_row[0] or not cleaned_row[1]:
+                    errors.append(f"Fila {row_number}: ID y nombre son campos requeridos")
+                    continue
             
-            # Create model instance
             data = dict(zip(model.__fields__.keys(), cleaned_row))
             instance = model(**data)
+            csv_data.append(instance)
             
-            # Only add valid rows
-            if instance.name or (model.__name__ != 'EmployeeCreate'):
-                csv_data.append(instance)
-            else:
-                errors.append(f"Fila {row_number}: Registro inválido - nombre vacío")
-                
+        except ValidationError as e:
+            errors.append(f"Fila {row_number}: {str(e)}")
         except Exception as e:
             errors.append(f"Fila {row_number}: {str(e)}")
             
@@ -54,11 +58,11 @@ def insert_batch(db, data, db_model):
         db.rollback()
         raise HTTPException(
             status_code=400,
-            detail=f"Error de integridad en la base de datos: {str(e)}"
+            detail=f"Error de integridad en la base de datos: {str(e.orig)}"
         )
     except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"Error inesperado al insertar datos: {str(e)}"
+            detail=f"Error inesperado: {str(e)}"
         )

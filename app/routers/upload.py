@@ -27,6 +27,7 @@ def process_csv(file, model, db_model, db):
         batch = data[i:i + batch_size]
         insert_batch(db, batch, db_model)
 
+
 @router.post("/upload/departments")
 async def upload_departments(
     file: Annotated[UploadFile, File(description="CSV file with departments data")]
@@ -55,35 +56,6 @@ async def upload_departments(
         )
     finally:
         db.close()
-
-
-@router.post("/upload/departments")
-async def upload_departments(file: UploadFile = File(...)):
-    """
-    Endpoint para cargar departamentos desde un archivo CSV.
-    """
-    db = SessionLocal()
-    try:
-        contents = await file.read()
-        data, errors = parse_csv(contents, schemas.DepartmentCreate, db)
-        
-        if errors:
-            raise HTTPException(
-                status_code=400,
-                detail={"message": "Errores de validación en el CSV", "errors": errors}
-            )
-        
-        insert_batch(db, data, models.Department)
-        return {"message": f"Se insertaron {len(data)} departamentos exitosamente"}
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error inesperado: {str(e)}"
-        )
-    finally:
-        db.close()
-
 
 
 @router.post("/upload/jobs")
@@ -126,7 +98,6 @@ async def upload_employees(
         contents = await file.read()
         data, errors = parse_csv(contents, schemas.EmployeeCreate, db)
         
-        # Process valid records even if some have errors
         if data:
             def process_with_new_session():
                 db = SessionLocal()
