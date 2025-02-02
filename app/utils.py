@@ -6,16 +6,9 @@ from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 import os
-
-import csv
-from io import StringIO
 from typing import List, Tuple, Any
 from pydantic import ValidationError
 
-import csv
-from io import StringIO
-from typing import List, Tuple, Any
-from pydantic import ValidationError
 
 def parse_csv(file: bytes, model: Any, db: Any) -> Tuple[List[Any], List[str]]:
     csv_data = []

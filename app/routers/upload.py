@@ -21,7 +21,6 @@ def process_csv(file, model, db_model, db):
             detail={"message": "Errores de validación en el CSV", "errors": errors}
         )
     
-    # Insertar en lotes
     batch_size = int(os.getenv("BATCH_SIZE", 1000))
     for i in range(0, len(data), batch_size):
         batch = data[i:i + batch_size]
