@@ -38,11 +38,10 @@ docker-compose up --build
 This command will build and start the Docker containers for the FastAPI application, PostgreSQL database, and pgAdmin.
 
 4. Access the Application
-FastAPI: Open your browser and navigate to http://localhost:8000
 
-API Documentation: Navigate to http://localhost:8000/docs
-
-pgAdmin: Open your browser and navigate to http://localhost:5050
+- FastAPI: Open your browser and navigate to http://localhost:8000
+- API Documentation: Navigate to http://localhost:8000/docs
+- pgAdmin: Open your browser and navigate to http://localhost:5050
 
 
 6. Add Server in pgAdmin
@@ -67,33 +66,33 @@ To test the FstAPI endpoints go to:
 http://localhost:8000/docs
 
 Endpoints
-Upload Employees
+- Upload Employees
 URL: /api/v1/upload/employees
 Method: POST
 Description: Endpoint to upload employees from a CSV file.
 Request:
 File: CSV file containing employee data.
 
-Upload Departments
+- Upload Departments
 URL: /api/v1/upload/departments
 Method: POST
 Description: Endpoint to upload departments from a CSV file.
 Request:
 File: CSV file containing department data.
 
-Upload Jobs
+- Upload Jobs
 URL: /api/v1/upload/jobs
 Method: POST
 Description: Endpoint to upload jobs from a CSV file.
 Request:
 File: CSV file containing job data.
 
-Get Hires by Quarter
+- Get Hires by Quarter
 URL: /api/v1/reports/hires-by-quarter
 Method: GET
 Description: Endpoint to get the number of hires by quarter for each department and job.
 
-Get Departments Above Mean
+- Get Departments Above Mean
 URL: /api/v1/reports/departments-above-mean
 Method: GET
 Description: Endpoint to get departments with hire counts above the mean.
