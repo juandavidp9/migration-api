@@ -39,11 +39,13 @@ This command will build and start the Docker containers for the FastAPI applicat
 
 4. Access the Application
 FastAPI: Open your browser and navigate to http://localhost:8000
+
 API Documentation: Navigate to http://localhost:8000/docs
+
 pgAdmin: Open your browser and navigate to http://localhost:5050
 
 
-5. Add Server in pgAdmin
+6. Add Server in pgAdmin
 Open pgAdmin at http://localhost:5050
 Log in with the following credentials:
 Email: admin@gmail.com
