@@ -22,15 +22,18 @@ This is a FastAPI application designed for database migration. It provides endpo
 ```bash
 git clone https://github.com/juandavidp9/migration-api.git
 cd migration-api
+```
 
 2. Create a .env File
 Create a .env file in the root directory with the following content:
 ```bash
 DATABASE_URL=postgresql://postgres:juan@db:5432/migration_db
+```
 
 3. Build and Run the Docker Containers
 ```bash
 docker-compose up --build
+```
 
 This command will build and start the Docker containers for the FastAPI application, PostgreSQL database, and pgAdmin.
 
@@ -97,6 +100,7 @@ Running Tests
 To run tests, use the following command:
 ```bash
 docker-compose run test
+```
 
 License
 This project is licensed under the MIT License.
