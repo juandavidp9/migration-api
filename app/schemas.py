@@ -1,6 +1,5 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, validator
 from typing import Optional
-from datetime import datetime
 from pydantic.config import ConfigDict
 
 class EmployeeCreate(BaseModel):
@@ -10,13 +9,17 @@ class EmployeeCreate(BaseModel):
     department_id: Optional[int] = None
     job_id: Optional[int] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        arbitrary_types_allowed=True
+    )
 
-    @field_validator('name')
-    def name_must_not_be_empty(cls, v):
-        if not v or not v.strip():
+    @classmethod
+    @validator('name')
+    def validate_name(cls, value):
+        if not value or not value.strip():
             raise ValueError('El nombre no puede estar vacío')
-        return v.strip()
+        return value.strip()
 
 class DepartmentCreate(BaseModel):
     id: int

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:juan@db:5432/migration_db")
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
